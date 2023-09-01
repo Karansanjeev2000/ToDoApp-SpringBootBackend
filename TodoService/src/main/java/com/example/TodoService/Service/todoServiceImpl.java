@@ -12,28 +12,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class todoServiceImpl implements todoService{
-    private  TodoRepository todoRepository;
-    private UserProxy userProxy;
+     private UserProxy userProxy;  private  TodoRepository todoRepository;
+
     @Autowired
-    todoServiceImpl(UserProxy userProxy,TodoRepository todoRepository){
+    public todoServiceImpl(UserProxy userProxy,TodoRepository todoRepository){
         this.todoRepository=todoRepository;
-        this.userProxy=userProxy;
+        this.userProxy = userProxy;
+
     }
+
     @Override
     public User registerUser(User obj) throws UserAlreadyExistsException {
+
         if(todoRepository.findById(obj.getUserEmail()).isPresent()){
             throw new UserAlreadyExistsException();
         }
         User user=todoRepository.save(obj);
+
         if(user.getUserEmail()!=null){
             userProxy.SaveUser(obj);
         }
-        return user;
+        return todoRepository.findById(obj.getUserEmail()).get();
     }
     @Override
     public List<Todo> getalltasks(String email) {
@@ -49,14 +54,14 @@ public class todoServiceImpl implements todoService{
         }
         User object=todoRepository.findById(email).get();
         List<Todo> Tlist=object.getListOfTodo();
-        if(Tlist.size()<=0){
+        if(Tlist.size()==0 || Tlist==null){
             throw  new TaskNotFoundException();
         }
 
         for(var i=0;i<Tlist.size();i++){
             if(Tlist.get(i).getTaskid().equals(id)){
                 Tlist.remove(i); /// removing based on index
-                object.setListOfTodo(Tlist); // updating the removed list
+                todoRepository.save(object); // updating the removed list
                 return "Successfully deleted";
             }
         }
@@ -66,20 +71,19 @@ public class todoServiceImpl implements todoService{
     @Override
     public Todo updateTask(String email,Todo obj) throws UserNotFoundException {
 
-        Optional<User> isTobeUpdatedUser = todoRepository.findById(email);
+        User isTobeUpdatedUser = todoRepository.findById(email).get();
+        System.out.println(isTobeUpdatedUser);
         User existingUser = null;
-
         List<Todo>  existingTasks = new ArrayList<>();
-
-        if (isTobeUpdatedUser.isPresent()) {
-            existingUser = isTobeUpdatedUser.get();
+        if (todoRepository.findById(email).isPresent()) {
+            existingUser = todoRepository.findById(email).get();
             existingTasks=existingUser.getListOfTodo();
 
             String TaskId = obj.getTaskid();
 
 
             for (int i = 0; i < existingTasks.size(); i++) {
-                if (existingTasks.get(i).getTaskid().equals(TaskId))  {
+                if (existingTasks.get(i).getTaskid().equals(obj.getTaskid())) {
 
                     if (obj.getCategory() != null) {
                         existingTasks.get(i).setCategory(obj.getCategory());
@@ -116,24 +120,35 @@ public class todoServiceImpl implements todoService{
 
 
     @Override
-    public Todo saveTask(String email,Todo obj) throws UserNotFoundException,TaskAlreadyExistsException {
+    public User saveTask(String email,Todo obj) throws UserNotFoundException,TaskAlreadyExistsException {
         User user=todoRepository.findById(email).get();
+
         if(todoRepository.findById(email).isEmpty()){
            throw new UserNotFoundException();
         }
 
-        if(todoRepository.findById(obj.getTaskid()).isPresent()) {
-            throw new TaskAlreadyExistsException();
+        if (user.getListOfTodo() == null){
+            user.setListOfTodo(Arrays.asList(obj));
         }
+        else{
+            for (int i = 0; i < user.getListOfTodo().size(); i++) {
+                if (user.getListOfTodo().get(i).getTaskid().equals(obj.getTaskid())){
+                    throw new TaskAlreadyExistsException();
+                }
+            }
+            List<Todo> taskList = user.getListOfTodo();
+            taskList.add(obj);
+            user.setListOfTodo(taskList);
 
-        List<Todo> taskList=new ArrayList<>();
-        taskList=user.getListOfTodo();
-        taskList.add(obj);
-        user.setListOfTodo(taskList);
+        }
         todoRepository.save(user);
-
-             return obj;
+        return user;
     }
+
+
+
+
+
 
 
 }

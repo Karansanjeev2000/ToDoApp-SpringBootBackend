@@ -8,7 +8,9 @@ import com.example.TodoService.Exception.UserAlreadyExistsException;
 import com.example.TodoService.Exception.UserNotFoundException;
 import com.example.TodoService.Service.todoServiceImpl;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class ToDoController {
         // Register a new user and save to db, return 201 status if user is saved else 500 status
         try {
             User create =todoService.registerUser(user);
-            return new ResponseEntity<>("Done", HttpStatus.CREATED);
+            return new ResponseEntity<>(create, HttpStatus.CREATED);
         }catch (UserAlreadyExistsException u){
             throw new UserAlreadyExistsException();
         }

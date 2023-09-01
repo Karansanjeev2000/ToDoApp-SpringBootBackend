@@ -1,8 +1,9 @@
 package com.example.TodoAuthServic.Domain;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+
+import javax.persistence.Id;
+import javax.persistence.Entity;
 
 @Entity
 public class User {
