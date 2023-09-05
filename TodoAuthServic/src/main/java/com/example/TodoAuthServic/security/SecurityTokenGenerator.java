@@ -3,6 +3,8 @@ package com.example.TodoAuthServic.security;
 
 import com.example.TodoAuthServic.Domain.User;
 
+import java.util.Map;
+
 public interface SecurityTokenGenerator {
-    String createToken(User user);
+    Map<String,String> createToken(User user);
 }

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//@CrossOrigin(origins="http://localhost:4200")
 @RestController
 @RequestMapping("api/v2")
 public class ToDoController {
@@ -25,7 +26,7 @@ public class ToDoController {
     ToDoController(todoServiceImpl todoService){
         this.todoService=todoService;
     }
-    @PostMapping("register")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) throws UserAlreadyExistsException {
         // Register a new user and save to db, return 201 status if user is saved else 500 status
         try {
@@ -51,7 +52,7 @@ public class ToDoController {
         return responseEntity;
     }
 
-    @GetMapping("user/getall")
+    @GetMapping("/user/getall")
     public ResponseEntity<?> getallTask(HttpServletRequest request)throws UserNotFoundException{
         try{
             request.getHeader("Authorization");
@@ -63,7 +64,7 @@ public class ToDoController {
         }
         return responseEntity;
     }
-    @PutMapping("user/updateTask")
+    @PutMapping("/user/updateTask")
     public ResponseEntity<?> updateTrack(@RequestBody Todo obj, HttpServletRequest request) throws UserNotFoundException {
         try {
             request.getHeader("Authorization");
@@ -75,7 +76,7 @@ public class ToDoController {
         }
         return responseEntity;
     }
-    @DeleteMapping("user/task/{taskId}")
+    @DeleteMapping("/user/task/{taskId}")
     public ResponseEntity<?> deleteTrack(@PathVariable String taskId,HttpServletRequest request) throws TaskNotFoundException {
 
         try{

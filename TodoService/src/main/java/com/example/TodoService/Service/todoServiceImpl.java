@@ -132,7 +132,8 @@ public class todoServiceImpl implements todoService{
         }
         else{
             for (int i = 0; i < user.getListOfTodo().size(); i++) {
-                if (user.getListOfTodo().get(i).getTaskid().equals(obj.getTaskid())){
+
+                if (user.getListOfTodo().get(i).getTaskName().equals(obj.getTaskName())){
                     throw new TaskAlreadyExistsException();
                 }
             }
