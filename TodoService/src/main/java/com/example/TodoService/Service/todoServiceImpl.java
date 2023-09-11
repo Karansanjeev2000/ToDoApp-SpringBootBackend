@@ -47,6 +47,7 @@ public class todoServiceImpl implements todoService{
 
     }
 
+
     @Override
     public String DeleteByTaskId(String email,String id)throws UserNotFoundException, TaskNotFoundException {
         if(todoRepository.findById(email).isEmpty()){
@@ -146,9 +147,24 @@ public class todoServiceImpl implements todoService{
         return user;
     }
 
+    @Override
+    public Todo getTaskById(String email, String id) throws UserNotFoundException,TaskNotFoundException {
+        if(todoRepository.findById(email).isEmpty()){
+            throw new UserNotFoundException();
+        }
+        User object=todoRepository.findById(email).get();
+        List<Todo> Tlist=object.getListOfTodo();
+        if(Tlist.size()==0 || Tlist==null){
+            throw  new TaskNotFoundException();
+        }
 
-
-
+        for(var i=0;i<Tlist.size();i++){
+            if(Tlist.get(i).getTaskid().equals(id)){
+                return Tlist.get(i);
+            }
+        }
+        return  null;
+    }
 
 
 

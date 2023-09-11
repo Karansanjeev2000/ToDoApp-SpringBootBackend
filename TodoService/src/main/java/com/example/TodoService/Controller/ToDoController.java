@@ -65,7 +65,7 @@ public class ToDoController {
         return responseEntity;
     }
     @PutMapping("/user/updateTask")
-    public ResponseEntity<?> updateTrack(@RequestBody Todo obj, HttpServletRequest request) throws UserNotFoundException {
+    public ResponseEntity<?> updateTask(@RequestBody Todo obj, HttpServletRequest request) throws UserNotFoundException {
         try {
             request.getHeader("Authorization");
             Claims c = (Claims) request.getAttribute("userEmail");
@@ -77,13 +77,27 @@ public class ToDoController {
         return responseEntity;
     }
     @DeleteMapping("/user/task/{taskId}")
-    public ResponseEntity<?> deleteTrack(@PathVariable String taskId,HttpServletRequest request) throws TaskNotFoundException {
+    public ResponseEntity<?> deleteTask(@PathVariable String taskId,HttpServletRequest request) throws TaskNotFoundException {
 
         try{
             request.getHeader("Authorization");
             Claims c=(Claims) request.getAttribute("userEmail");
             String email=c.getSubject();
             responseEntity=new ResponseEntity<>(todoService.DeleteByTaskId(email,taskId),HttpStatus.OK);
+        } catch (TaskNotFoundException | UserNotFoundException e) {
+            throw new TaskNotFoundException();
+        }
+        return responseEntity;
+    }
+
+    @GetMapping("/user/getTask/{taskId}")
+    public ResponseEntity<?> GetTaskByid(@PathVariable String taskId,HttpServletRequest request) throws TaskNotFoundException {
+
+        try{
+            request.getHeader("Authorization");
+            Claims c=(Claims) request.getAttribute("userEmail");
+            String email=c.getSubject();
+            responseEntity=new ResponseEntity<>(todoService.getTaskById(email,taskId),HttpStatus.OK);
         } catch (TaskNotFoundException | UserNotFoundException e) {
             throw new TaskNotFoundException();
         }

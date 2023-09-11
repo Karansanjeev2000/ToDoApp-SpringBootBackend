@@ -15,5 +15,6 @@ public interface todoService {
     public String DeleteByTaskId(String email,String id)throws UserNotFoundException,TaskNotFoundException;
     public Todo updateTask(String email,Todo obj)throws UserNotFoundException;
     public User saveTask(String email,Todo obj)throws UserNotFoundException,TaskAlreadyExistsException;
+    public Todo getTaskById(String email,String id) throws UserNotFoundException,TaskNotFoundException;
 
 }
